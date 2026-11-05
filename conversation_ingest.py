@@ -48,8 +48,8 @@ class ConversationIngest:
         """Create or update an AI Conversation item.
 
         If ``dedupe`` is true and an identical conversation (by content
-        hash) already exists, the existing object is returned without
-        modification.
+        hash) already exists, the existing object is updated in place
+        with the new content.
         """
         if timestamp is None:
             timestamp = datetime.now(timezone.utc).isoformat()
@@ -62,8 +62,19 @@ class ConversationIngest:
         if dedupe:
             existing = self._find_existing_conversation(content_hash, title)
             if existing is not None:
-                logger.info("Duplicate conversation found: %s", existing["id"])
-                return existing
+                logger.info(
+                    "Duplicate conversation found: %s. Updating in place.",
+                    existing["id"],
+                )
+                # Update the existing object with new content.
+                return self.manager.update_object_from_template(
+                    friendly_structure="conversation",
+                    object_id=existing["id"],
+                    title=display_title,
+                    properties=template["properties"],
+                    blocks=template["blocks"],
+                    markdown=markdown,
+                )
 
         structures = self.manager.ensure_structures()
         conv_struct = structures.get("conversation")
