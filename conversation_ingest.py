@@ -61,6 +61,21 @@ class ConversationIngest:
         # Include content hash in title for idempotent dedup.
         display_title = f"{title} [{content_hash}]"
 
+        template = ai_conversation_object(
+            title=display_title,
+            source=source,
+            timestamp=timestamp,
+            participants=participants,
+            conversation_text=conversation_text,
+        )
+        template["properties"]["contentHash"] = {
+            "type": "text",
+            "text": {"value": content_hash},
+        }
+
+        # Generate Markdown for the /object/markdown fallback path.
+        markdown = self._conversation_to_markdown(display_title, conversation_text)
+
         # Deduplication check.
         if dedupe:
             existing = self._find_existing_conversation(content_hash, title)
@@ -99,21 +114,6 @@ class ConversationIngest:
             # Register RootAIChat under "conversation" key so create/update
             # methods can find it without attempting custom structure creation.
             self.manager.register_structure("conversation", conv_struct)
-
-        template = ai_conversation_object(
-            title=display_title,
-            source=source,
-            timestamp=timestamp,
-            participants=participants,
-            conversation_text=conversation_text,
-        )
-        template["properties"]["contentHash"] = {
-            "type": "text",
-            "text": {"value": content_hash},
-        }
-
-        # Generate Markdown for the /object/markdown fallback path.
-        markdown = self._conversation_to_markdown(display_title, conversation_text)
 
         try:
             return self.manager.create_object_from_template(
