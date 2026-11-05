@@ -90,7 +90,6 @@ class ConversationIngest:
                     object_id=existing["id"],
                     title=display_title,
                     properties=template["properties"],
-                    blocks=template["blocks"],
                 )
 
         structures = self.manager.ensure_structures()
