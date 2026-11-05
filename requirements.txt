@@ -1,0 +1,16 @@
+# Capacities Automation Tool
+
+# Requirements for the Capacities.io automation tool.
+
+# Core
+httpx>=0.25.0
+
+# PowerShell parsing (optional, for AST-based parsing)
+# pypsparser>=0.1.0
+
+# Testing
+pytest>=7.0.0
+pytest-mock>=3.0.0
+
+# Linting / formatting (optional)
+ruff>=0.10.0
