@@ -58,6 +58,9 @@ class ConversationIngest:
             f"{title}|{source}|{conversation_text}".encode("utf-8")
         ).hexdigest()[:16]
 
+        # Include content hash in title for idempotent dedup.
+        display_title = f"{title} [{content_hash}]"
+
         # Deduplication check.
         if dedupe:
             existing = self._find_existing_conversation(content_hash, title)
@@ -96,9 +99,6 @@ class ConversationIngest:
             # Register RootAIChat under "conversation" key so create/update
             # methods can find it without attempting custom structure creation.
             self.manager.register_structure("conversation", conv_struct)
-
-        # Include content hash in title for idempotent dedup.
-        display_title = f"{title} [{content_hash}]"
 
         template = ai_conversation_object(
             title=display_title,
