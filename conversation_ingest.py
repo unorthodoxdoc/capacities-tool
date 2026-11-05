@@ -91,7 +91,6 @@ class ConversationIngest:
                     title=display_title,
                     properties=template["properties"],
                     blocks=template["blocks"],
-                    markdown=markdown,
                 )
 
         structures = self.manager.ensure_structures()
